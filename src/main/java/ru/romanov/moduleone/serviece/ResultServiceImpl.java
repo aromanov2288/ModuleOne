@@ -1,17 +1,26 @@
 package ru.romanov.moduleone.serviece;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Service;
 import ru.romanov.moduleone.dao.QuestionDAO;
 import ru.romanov.moduleone.dao.ResultDAO;
 import ru.romanov.moduleone.domain.Question;
 
 import java.util.Map;
 
+@Service
 public class ResultServiceImpl implements ResultService {
 
+    private LocaleService localeService;
+    private MessageSource ms;
     private ResultDAO resultDAO;
     private QuestionDAO questionDAO;
 
-    public ResultServiceImpl(ResultDAO resultDao, QuestionDAO questionDao) {
+    @Autowired
+    public ResultServiceImpl(LocaleService localeService, MessageSource ms, ResultDAO resultDao, QuestionDAO questionDao) {
+        this.localeService = localeService;
+        this.ms = ms;
         this.resultDAO = resultDao;
         this.questionDAO = questionDao;
     }
@@ -52,7 +61,8 @@ public class ResultServiceImpl implements ResultService {
         for (int i = 0; i < questionCount; i++) {
             Question question = questionDAO.getQuestionById(i);
             if (!question.getRightAnswer().equals(answersMap.get(i))) {
-                wrongAnswersString = wrongAnswersString + i + "(" + answersMap.get(i) + " вместо "
+                wrongAnswersString = wrongAnswersString + i + "(" + answersMap.get(i)
+                        + " " + ms.getMessage("Instead", null, localeService.getLocale()) + " "
                         + question.getRightAnswer() + ") ";
             }
         }
