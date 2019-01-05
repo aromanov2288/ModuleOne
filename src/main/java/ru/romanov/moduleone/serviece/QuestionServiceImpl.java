@@ -1,13 +1,17 @@
 package ru.romanov.moduleone.serviece;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.romanov.moduleone.dao.QuestionDAO;
 
 import java.util.Map;
 
+@Service
 public class QuestionServiceImpl implements QuestionService {
 
     private QuestionDAO dao;
 
+    @Autowired
     public QuestionServiceImpl(QuestionDAO dao) {
         this.dao = dao;
     }

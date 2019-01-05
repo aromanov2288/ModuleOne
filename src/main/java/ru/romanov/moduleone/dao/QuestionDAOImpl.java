@@ -1,6 +1,11 @@
 package ru.romanov.moduleone.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Repository;
 import ru.romanov.moduleone.domain.Question;
+import ru.romanov.moduleone.serviece.LocaleService;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,16 +15,25 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+@Repository
 public class QuestionDAOImpl implements QuestionDAO {
+
+    private LocaleService localeService;
+
+    private MessageSource ms;
 
     private String fileName;
 
     private List<Question> questionsList = null;
 
-    public QuestionDAOImpl(String fileName) {
-        this.fileName = System.getProperty("user.dir") + "/src/main/resources/" + fileName;
+    @Autowired
+    public QuestionDAOImpl(LocaleService localeService, MessageSource ms, @Value("${fileName}") String fileName) {
+        this.localeService = localeService;
+        this.ms = ms;
+        this.fileName = fileName;
     }
 
     /**
@@ -45,8 +59,11 @@ public class QuestionDAOImpl implements QuestionDAO {
     }
 
     private void readQuestionsFile() throws Exception {
+        String[] subFileName = fileName.split("\\.");
+        String fileNameWithLocale = System.getProperty("user.dir") + "/src/main/resources/"
+                + subFileName[0] + ms.getMessage("Locale", null, localeService.getLocale()) + "." + subFileName[1];
         try {
-            File file = new File(fileName);
+            File file = new File(fileNameWithLocale);
             FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String line = bufferedReader.readLine();
@@ -68,9 +85,9 @@ public class QuestionDAOImpl implements QuestionDAO {
                 line = bufferedReader.readLine();
             }
         } catch (FileNotFoundException e) {
-            throw new Exception("Не удалось найти файл " + fileName);
+            throw new Exception(ms.getMessage("Could_not_find_file", new Object[]{fileNameWithLocale}, localeService.getLocale()));
         } catch (IOException e) {
-            throw new Exception("Не удалось прочитать файл " + fileName);
+            throw new Exception(ms.getMessage("Could_not_read_file", new Object[]{fileNameWithLocale}, localeService.getLocale()));
         }
     }
 }

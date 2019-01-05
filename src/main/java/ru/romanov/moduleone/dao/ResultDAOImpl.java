@@ -1,10 +1,12 @@
 package ru.romanov.moduleone.dao;
 
+import org.springframework.stereotype.Repository;
 import ru.romanov.moduleone.domain.Result;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Repository
 public class ResultDAOImpl implements ResultDAO {
 
     private Result result = new Result();
